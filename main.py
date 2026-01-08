@@ -22,10 +22,13 @@ async def analyze(files: List[UploadFile] = File(...)):
         "events": []
     }
 
-    return {
-        "calendar_id": calendar_id,
-        "ics_url": f"/api/calendar/{calendar_id}.ics"
-    }
+    BASE_URL = "https://silly-backend.onrender.com"
+
+return {
+    "calendar_id": calendar_id,
+    "ics_url": f"{BASE_URL}/api/calendar/{calendar_id}.ics"
+}
+
 
 
 @app.get("/api/calendar/{calendar_id}.ics")
