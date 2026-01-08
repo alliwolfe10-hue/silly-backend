@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import Response
 from datetime import date, timedelta
+from typing import List
 import uuid
+
 
 app = FastAPI()
 
@@ -9,37 +11,22 @@ app = FastAPI()
 CALENDARS = {}
 
 @app.post("/api/syllabi/analyze")
-async def analyze():
+async def analyze(files: List[UploadFile] = File(...)):
+    _ = [f.filename for f in files]
+
     calendar_id = f"cal_{uuid.uuid4().hex[:8]}"
 
+    # For now, ignore file contents — just accept them
     CALENDARS[calendar_id] = {
         "name": "Silly – My Semester",
-        "events": [
-            {
-                "uid": "exam1",
-                "title": "Exam One — BBE 3013",
-                "date": date(2025, 10, 6),
-                "description": "Mon 10/6/2025 Exam One"
-            },
-            {
-                "uid": "exam2",
-                "title": "Exam Two — BBE 3013",
-                "date": date(2025, 11, 10),
-                "description": "Mon 11/10/2025 Exam Two"
-            },
-            {
-                "uid": "final",
-                "title": "Final Exam — BBE 3013",
-                "date": date(2025, 12, 16),
-                "description": "Tues 12/16/2025 Final Exam"
-            }
-        ]
+        "events": []
     }
 
     return {
         "calendar_id": calendar_id,
         "ics_url": f"/api/calendar/{calendar_id}.ics"
     }
+
 
 @app.get("/api/calendar/{calendar_id}.ics")
 def get_calendar(calendar_id: str):
@@ -70,3 +57,5 @@ def get_calendar(calendar_id: str):
     lines.append("END:VCALENDAR")
 
     return Response("\r\n".join(lines), media_type="text/calendar")
+# deploy trigger
+
